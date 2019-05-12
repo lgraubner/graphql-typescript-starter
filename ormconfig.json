@@ -4,7 +4,7 @@
   "host": "db",
   "port": 5432,
   "username": "postgres",
-  "password": "posgres",
+  "password": "postgres",
   "database": "postgres",
   "logging": true,
   "entities": ["src/entities/**/*.ts"],
