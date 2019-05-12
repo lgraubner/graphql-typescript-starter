@@ -1,0 +1,8 @@
+entity: User
+items:
+  user1:
+    id: 1
+    firstName: 'Lars'
+    lastName: 'Graubner'
+    email: 'mail@larsgraubner.de'
+    password: '$2b$10$QEUAB7ZAn9ykn9V.jKPmDOcyxMSvNWwTfWP8sVrLI7sOOt.E4FIz.'
