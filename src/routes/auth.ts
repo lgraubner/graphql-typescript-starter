@@ -51,11 +51,6 @@ authRouter.post('/login', function(req, res, next): void {
       return next(err)
     }
 
-    return next(
-      createError(401, 'bla', {
-        isOperational: true
-      })
-    )
     if (!user) {
       return next(createError(401, 'Invalid credentials'))
     }

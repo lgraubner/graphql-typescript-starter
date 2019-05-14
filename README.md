@@ -1,5 +1,17 @@
 # GraphQL API TypeScript Starter
 
+## Features
+
+- Apollo GraphQL
+- TypeScript
+- TypeORM with Postgres
+- Fixture support
+- Authentication layer with Express + Passport.js
+- Prettier with git hook
+- Eslint linting
+- Docker integration
+- Example Nginx config
+
 ## Commands
 
 ```bash

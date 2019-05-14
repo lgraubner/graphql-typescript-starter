@@ -1,20 +1,31 @@
 version: '3'
 
 services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy:alpine
+    ports:
+      - 80:80
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+  db:
+    image: postgres:11-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+  redis:
+    image: redis:5-alpine
+    restart: always
   node:
     build: .
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-    ports:
-      - 3000:3000
-      - 9229:9229
+    expose:
+      - '3000'
     command: npm start
-  db:
-    image: postgres:11-alpine
-    restart: always
     environment:
-      POSTGRES_PASSWORD: postgres
-  redis:
-    image: redis:5-alpine
-    restart: always
+      - VIRTUAL_HOST=localhost
+    depends_on:
+      - db
+      - redis
+      - nginx-proxy

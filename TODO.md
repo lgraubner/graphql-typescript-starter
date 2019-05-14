@@ -1,11 +1,13 @@
 # TODO
 
 - Twitter Auth (example)
-- Example Nginx config
+- Example Nginx config (docker container?)
   - logs
   - rate limiting
 - csrf
 - Readme
-- Errors
-  - dev/prod
-  - isOperational
+- Tests
+- graceful shutdown
+- production docker image
+
+Tweet about this!

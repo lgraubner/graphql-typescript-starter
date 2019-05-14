@@ -1,10 +1,32 @@
+import { createTerminus } from '@godaddy/terminus'
+
 import app from './app'
 import db from './connector'
 
-const debug = require('debug')('api')
+const debug = require('debug')('server')
 
 // @ts-ignore
 const port = parseInt(process.env.PORT, 10) || 3000
+
+function onSignal(): any {
+  debug('Kill signal received')
+}
+
+function onShutdown(): any {
+  debug('Shutting down server')
+}
+
+function healthCheck(): any {
+  return Promise.resolve(true)
+}
+
+createTerminus(app, {
+  healthChecks: {
+    '/healthcheck': healthCheck
+  },
+  onSignal,
+  onShutdown
+})
 
 db.then(
   (): void => {
@@ -26,12 +48,9 @@ process.on(
 process.on(
   'uncaughtException',
   (err): void => {
-    // @TODO: log error and decide if server should crash
+    // @TODO: log error with sentry
     console.error('Uncaught exception', err)
 
-    // @ts-ignore
-    if (!err.isOperational) {
-      process.exit(1)
-    }
+    process.exit(1)
   }
 )

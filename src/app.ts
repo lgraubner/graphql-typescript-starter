@@ -5,6 +5,7 @@ import compression from 'compression'
 import helmet from 'helmet'
 import dotenv from 'dotenv'
 import passport from 'passport'
+import stackTrace from 'stack-trace'
 
 import auth from './middlewares/auth'
 import session from './middlewares/session'
@@ -43,16 +44,16 @@ app.use(function(
     return next()
   }
 
-  console.log(err)
+  const stacktrace = stackTrace.parse(err)
+
   res.status(err.status).json({
     error: {
       status: err.status,
-      message: err.message
+      message: err.message,
+      stacktrace:
+        process.env.NODE_ENV === 'development' ? stacktrace : undefined
     }
   })
-
-  console.error(err)
-  // add Sentry or similar error tracking service here
 })
 
 export default app
