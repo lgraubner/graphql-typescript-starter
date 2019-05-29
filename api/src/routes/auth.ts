@@ -2,6 +2,7 @@ import { Router } from 'express'
 import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 // import { Strategy as TwitterStrategy } from 'passport-twitter'
+import Joi from '@hapi/joi'
 
 import dotenv from 'dotenv'
 import createError from 'http-errors'
@@ -9,6 +10,8 @@ import createError from 'http-errors'
 import { getUserByEmail } from '../repositories/user'
 
 import User from '../entities/User'
+
+import omit from '../utils/omit'
 
 dotenv.config()
 
@@ -22,10 +25,26 @@ passport.deserializeUser(function(user: User, done): void {
   done(null, user)
 })
 
+const loginSchema = Joi.object().keys({
+  username: Joi.string()
+    .email({ minDomainSegments: 2 })
+    .required(),
+  password: Joi.string()
+    .min(8)
+    .required()
+    .strip()
+})
+
 passport.use(
   new LocalStrategy(
     { usernameField: 'email' },
     async (username, password, done): Promise<any> => {
+      const { error } = Joi.validate({ username, password }, loginSchema)
+
+      if (error) {
+        return done(createError(400, error))
+      }
+
       try {
         const user = await getUserByEmail(username)
         if (!user) {
@@ -37,7 +56,7 @@ passport.use(
           return done(null, false)
         }
 
-        return done(null, user)
+        return done(null, omit(user, 'password'))
       } catch (err) {
         return done(err)
       }
@@ -60,9 +79,9 @@ authRouter.post('/login', function(req, res, next): void {
         return next(err)
       }
 
-      // eslint-disable-next-line
-      const { password, ...serializedUser } = user
-      return res.json(serializedUser)
+      return res.json({
+        data: user
+      })
     })
   })(req, res, next)
 })

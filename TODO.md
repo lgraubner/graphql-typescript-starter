@@ -1,13 +1,9 @@
 # TODO
 
 - Twitter Auth (example)
-- Example Nginx config (docker container?)
-  - logs
-  - rate limiting
-- csrf
 - Readme
-- Tests
-- graceful shutdown
-- production docker image
+- Frontend
+
+https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/REST_Security_Cheat_Sheet.md
 
 Tweet about this!

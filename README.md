@@ -26,3 +26,9 @@ docker-compose exec node npm run fixtures
 ### Error Handling
 
 isOperational
+
+## Deploy
+
+- Now.sh
+- Google Cloud SQL
+- Google Memory Store

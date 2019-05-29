@@ -1,23 +1,26 @@
-import express, { Request, Response, NextFunction } from 'express'
+import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import compression from 'compression'
 import helmet from 'helmet'
-import dotenv from 'dotenv'
 import passport from 'passport'
-import stackTrace from 'stack-trace'
 
 import auth from './middlewares/auth'
 import session from './middlewares/session'
+import httpMethods from './middlewares/httpMethods'
+import contentType from './middlewares/contentType'
+import errorHandler from './middlewares/errorHandler'
+import notFoundHandler from './middlewares/notFoundHandler'
+import csrf from './middlewares/csrf'
 
-import apiRoute from './routes/api'
 import authRoutes from './routes/auth'
 
 import apolloServer from './apolloServer'
 
-dotenv.config()
-
 const app = express()
+
+// get real ip from nginx proxy
+app.set('trust proxy', true)
 
 // middlewares
 app.use(bodyParser.json())
@@ -25,35 +28,20 @@ app.use(cors())
 app.use(compression())
 app.use(helmet())
 app.use(session)
+app.use(httpMethods(['GET', 'POST']))
+app.use(contentType('application/json'))
+app.use(csrf)
+
 app.use(passport.initialize())
 app.use(passport.session())
 
 // routes
-app.use('/graphql', auth, apiRoute)
+app.use('/graphql', auth)
 app.use('/', authRoutes)
 
 apolloServer.applyMiddleware({ app })
 
-app.use(function(
-  err: any,
-  _req: Request,
-  res: Response,
-  next: NextFunction
-): void {
-  if (!err) {
-    return next()
-  }
-
-  const stacktrace = stackTrace.parse(err)
-
-  res.status(err.status).json({
-    error: {
-      status: err.status,
-      message: err.message,
-      stacktrace:
-        process.env.NODE_ENV === 'development' ? stacktrace : undefined
-    }
-  })
-})
+app.use(notFoundHandler)
+app.use(errorHandler)
 
 export default app

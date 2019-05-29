@@ -1,14 +1,14 @@
 import { ApolloServer } from 'apollo-server-express'
+import { Request } from 'express'
 
 import schema from './schema'
 
 const server = new ApolloServer({
   schema,
-  context: (): any => {
+  context: (req: Request): any => {
+    // @TODO:
     return {
-      user: {
-        id: 1
-      }
+      user: req
     }
   }
 })
